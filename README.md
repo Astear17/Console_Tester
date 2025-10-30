@@ -1,52 +1,72 @@
-# Console Tester
-The repository to build a program for testing your gamepad (a.k.a game controller)
+# 🎮 Console Tester
 
-## ✨ Overview
+**Console Tester** is a simple, browser-based utility designed to instantly **test and visualize** the input from any connected gamepad (joystick, controller, etc.) using the Web Gamepad API.
 
-The **Gamepad Tester** is a simple, single-file web application designed to help users test and visualize the input from a connected game controller (gamepad). It leverages the **Web Gamepad API** to provide real-time feedback on button presses, analog stick positions, and even controller vibration capabilities.
-
-This is a **pure HTML, CSS, and JavaScript** solution contained entirely within a single `index.html` file, making it easy to host and use.
+It's an essential tool for **developers** checking browser compatibility, or **gamers** verifying if their controller's buttons, analog sticks, and rumble functionality are working correctly before starting a game.
 
 ---
 
-## 🚀 Features
+## 🚀 Live Demo
 
-* **Plug and Play:** Automatically detects a connected gamepad when the user interacts with the controller (e.g., presses a button).
-* **Real-time Button Status:** Visually highlights pressed buttons and displays their precise analog value (for triggers/buttons that support it).
-* **Analog Stick Visualization:** Displays the X/Y coordinates of both the Left and Right analog sticks (Axes 0/1 and Axes 2/3) on an interactive canvas, showing a visual "dot" for the current position.
-* **Vibration (Rumble) Test:** Includes buttons to test the controller's haptic feedback (rumble) if supported by the device and browser.
-* **Controller Identification:** Displays the unique ID string provided by the Gamepad API to identify the connected device.
-* **Standard Mapping:** Uses a standard mapping for common buttons (A, B, X, Y, LB, RB, LT, RT, etc.) for easier identification.
+The tester is available on https://astear17.github.io/Console_Tester or [clone it and run locally on your device](https://github.com/Astear17/Console_Tester/main/blob/README.md#how-to-clonerun-locally)
 
 ---
 
-## 🛠️ How to Set Up and Run
+## ✨ Features
 
-Since this is a single-file application, setup is extremely simple.
+The application provides a real-time, interactive display for key controller inputs:
 
-1.  **Save the Code:** Copy the entire HTML code into a file named `index.html`.
-2.  **Open in Browser:** Double-click the `index.html` file in your file explorer. It will open in your default web browser.
+* **Controller Information:** Displays the connected gamepad's name and ID.
 
-> **Note:** The Web Gamepad API requires user activation, so you must **press a button or move a stick** on your physical controller after opening the page to activate the connection and start the test loop.
+* **Button Testing:** Shows the **pressed state** and **analog value** (from $0.00$ to $1.00$) for every button, including analog triggers.
 
----
+* **Analog Stick Visualization:** Renders interactive canvases that show the **real-time position** of the Left and Right analog sticks, including their raw **Axis values** (from $-1.0000$ to $1.0000$).
 
-## 🕹️ How to Use
-
-1.  **Connect Your Controller:** Ensure your gamepad is plugged in or connected via Bluetooth to your computer.
-2.  **Activate:** With the `index.html` page open, **press any button** on your controller.
-3.  **Check Status:** The main status message will disappear, and the controller's name and test UI will appear.
-4.  **Test Buttons:** Press any button, shoulder, or trigger.
-    * The corresponding box in the **Buttons** section will highlight in blue and display its value (usually `1.00` for a digital press). Analog triggers will show values between `0.00` and `1.00`.
-5.  **Test Analog Sticks:** Move the Left and Right sticks.
-    * The visual dot in the respective canvas circle will move, and the numerical **Axis** values will update (ranging from `-1.0000` to `1.0000`).
-6.  **Test Vibration:** If the **Vibration (Rumble)** section is visible, use the buttons to test the haptic feedback.
+* **Vibration (Rumble) Test:** Allows you to test the controller's rumble feature with short, continuous, and stop functions (requires browser support).
 
 ---
 
-## 💻 Tech Stack
+## 🛠️ How It Works (Under the Hood)
 
-* **HTML5:** Structure of the application.
-* **CSS3:** Custom styling for a dark-themed, modern interface.
-* **Vanilla JavaScript:** Handles all logic, leveraging the `navigator.getGamepads()` and `window.addEventListener("gamepadconnected", ...)` methods of the **Web Gamepad API**.
-* **Canvas API:** Used to visually render the position of the analog sticks.
+This project is built as a single-page web application (`index.html`) leveraging modern web standards to provide a high-frequency input check:
+| **Component** | **Technology** | **Description** | 
+| :--- | :--- | :--- | 
+| **Core Functionality** | **JavaScript (Web Gamepad API)** | Uses `navigator.getGamepads()` and `requestAnimationFrame` to poll the controller's state at a high frequency, ensuring minimal input latency. | 
+| **Visuals (Sticks)** | **HTML Canvas API** | The analog stick movement is rendered dynamically using the Canvas API to create a visual, central representation of the X/Y axes and the stick's position. | 
+| **Structure & Style** | **HTML5 / CSS3** | Provides the structure and a clean, dark-themed, and responsive user interface. | 
+
+## How To Clone/Run Locally
+
+> To follow this tutorial, you must have the **Git** version control system installed on your computer.
+
+### 🚀 Step 1: Clone the Repository
+1.  **Open your Bash Terminal** (or Git Bash/Command Prompt if you are on Windows).
+2.  **Navigate to the folder** where you want to keep your projects. For example, to go to a 'Projects' folder on your desktop:
+    ```bash
+    cd ~/Desktop/Projects
+    ```
+3.  **Execute the `git clone` command.** This downloads all files and the history of the repository and creates a local folder named `Console_Tester`.
+    ```bash
+    git clone [https://github.com/Astear17/Console_Tester.git](https://github.com/Astear17/Console_Tester.git)
+    ```
+4.  **Move into the new project directory:**
+    ```bash
+    cd Console_Tester
+    ```
+---
+
+### ▶️ Step 2: Running the Project Locally
+The project is a single `index.html` file, so no web server is needed!
+1.  From inside the `Console_Tester` directory in your terminal, use a command to open the file in your default browser:
+    * **On macOS:**
+        ```bash
+        open index.html
+        ```
+    * **On Windows (using `start` in Git Bash):**
+        ```bash
+        start index.html
+        ```
+    * **On Linux:**
+        ```bash
+        xdg-open index.html
+        ```
