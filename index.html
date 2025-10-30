@@ -6,7 +6,7 @@
     <title>Console Tester</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">    
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -138,22 +138,39 @@
         
         /* --- NEW FOOTER STYLES --- */
         .footer-sep {
-            /* Inherited from the example code */
             border: none;
             height: 1px;
             margin: 25px 0;
             width: 100%;
-            max-width: 800px; /* To match the main container width */
+            max-width: 800px;
             background: linear-gradient(90deg, #5a4a4a, #3a2a2a 80%);
             opacity: 0.6;
         }
-        
         .centered-text {
-            /* Inherited from the example code */
             text-align: center;
-            opacity: 0.6; /* Matched to 60% opacity requirement */
+            opacity: 0.6;
             font-size: 0.9em;
-            margin-top: 5px; /* Reduced margin from 20px to match previous request */
+            margin-top: 5px;
+        }
+        /* --- NEW STYLES FOR WARNINGS AND INFO --- */
+        .warning-message {
+            text-align: center;
+            padding: 5px 0;
+            font-size: 0.9em; /* MODIFIED: Was 0.95em */
+            font-weight: normal; /* MODIFIED: Was bold */
+            opacity: 1; /* MODIFIED: Was 0.6 */
+        }
+        .warning-mobile {
+            color: #ffcc00; /* Yellow */
+        }
+        .warning-safari {
+            color: #ff3333; /* Red */
+        }
+        #browser-info {
+            text-align: center;
+            opacity: 0.6;
+            font-size: 0.85em;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -162,13 +179,17 @@
     <div id="status">
         Please connect a controller and press any button to start.
     </div>
+    
     <div id="tester-container">
         <h2 id="controller-name"></h2>
+        <div id="warnings">
+        </div>
+        
         <div class="details">
             <div id="buttons">
                 <h3>Buttons</h3>
                 <div id="button-grid">
-                    </div>
+                </div>
             </div>
             <div id="axes">
                 <h3>Analog Sticks</h3>
@@ -204,6 +225,8 @@
     <hr class="footer-sep">
     <footer class="centered-text">
         Deploy and summarized by Astear17
+        <div id="browser-info">
+        </div>
     </footer>
     <script>
         const statusEl = document.getElementById('status');
@@ -211,6 +234,8 @@
         const controllerNameEl = document.getElementById('controller-name');
         const buttonGridEl = document.getElementById('button-grid');
         const vibrationEl = document.getElementById('vibration');
+        const warningsEl = document.getElementById('warnings');
+        const browserInfoEl = document.getElementById('browser-info');
 
 
         const lStickCanvas = document.getElementById('l-stick');
@@ -224,6 +249,81 @@
         const vibrateStopBtn = document.getElementById('vibrate-stop');
         let connectedGamepad = null;
         let animationFrameId = null;
+
+        // --- NEW FUNCTIONS FOR USER AGENT AND WARNINGS ---
+
+        /**
+         * Simple User Agent parser for display and warnings.
+         * Note: User Agent string parsing is unreliable, but useful for general guidance.
+         */
+        function parseUserAgent() {
+            const ua = navigator.userAgent;
+            let os = 'Unknown OS';
+            let browser = 'Unknown Browser';
+            let isMobile = false;
+            let isSafariMobile = false;
+
+            // OS Detection
+            if (/Windows/i.test(ua)) os = 'Windows';
+            else if (/Macintosh|Mac OS X/i.test(ua)) os = 'macOS';
+            else if (/Linux/i.test(ua)) os = 'Linux';
+            else if (/Android/i.test(ua)) os = 'Android';
+            else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+
+            // Browser Detection
+            if (/Chrome/i.test(ua) && !/Edge|OPR/i.test(ua)) browser = 'Chrome';
+            else if (/Firefox/i.test(ua)) browser = 'Firefox';
+            else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = 'Safari';
+            else if (/MSIE|Trident/i.test(ua)) browser = 'IE';
+            else if (/Edge/i.test(ua)) browser = 'Edge';
+            else if (/OPR|Opera/i.test(ua)) browser = 'Opera';
+
+            // Mobile Detection
+            if (/(Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini)/i.test(ua)) {
+                isMobile = true;
+            }
+
+            // Specific Safari Mobile Check (for vibration warning)
+            if (browser === 'Safari' && /iPhone|iPad|iPod/i.test(ua)) {
+                isSafariMobile = true;
+            }
+
+            return { os, browser, isMobile, isSafariMobile };
+        }
+
+        function displayBrowserInfoAndWarnings() {
+            const info = parseUserAgent();
+            
+            // 1. Display Browser and OS in the footer
+            browserInfoEl.innerHTML = `
+                **Browser:** ${info.browser} | **OS:** ${info.os}
+            `;
+
+            // 2. Display Warnings inside the main container
+            warningsEl.innerHTML = ''; // Clear previous warnings
+
+            // Warning 1: Mobile User Agent
+            if (info.isMobile) {
+                const mobileWarning = document.createElement('div');
+                mobileWarning.className = 'warning-message warning-mobile';
+                mobileWarning.textContent = 'For better experiences, use a computer browser';
+                warningsEl.appendChild(mobileWarning);
+            }
+
+            // Warning 2: Safari Mobile for Vibration
+            if (info.isSafariMobile) {
+                const safariWarning = document.createElement('div');
+                safariWarning.className = 'warning-message warning-safari';
+                safariWarning.textContent = 'Vibration is supported in all modern browsers except Safari';
+                warningsEl.appendChild(safariWarning);
+            }
+        }
+        
+        // Run the new function immediately on load
+        displayBrowserInfoAndWarnings();
+
+        // --- END NEW FUNCTIONS ---
+
         window.addEventListener("gamepadconnected", (event) => {
             console.log("Gamepad connected:", event.gamepad);
             connectedGamepad = event.gamepad;
@@ -246,17 +346,17 @@
             statusEl.classList.remove('connected');
             controllerNameEl.textContent = gamepad.id;
             const buttonNames = {
-                0: 'A', 
+                0: 'A',  
                 1: 'B',  
-                2: 'X', 
+                2: 'X',  
                 3: 'Y',  
                 4: 'LB',
                 5: 'RB',
-                6: 'LT', 
-                7: 'RT', 
+                6: 'LT',  
+                7: 'RT',  
                 8: 'Back',
-                9: 'Start', 
-                10: 'LS', 
+                9: 'Start',  
+                10: 'LS',  
                 11: 'RS',
                 12: 'Up',
                 13: 'Down',
@@ -264,7 +364,7 @@
                 15: 'Right',
                 16: 'Home'
             };
-            buttonGridEl.innerHTML = ''; 
+            buttonGridEl.innerHTML = '';   
             gamepad.buttons.forEach((button, index) => {
                 const buttonEl = document.createElement('div');
                 buttonEl.className = 'button';
@@ -293,7 +393,7 @@
             vibrate1sBtn.onclick = () => {
                 actuator.playEffect("dual-rumble", {
                     startDelay: 0,
-                    duration: 1000, 
+                    duration: 1000,    
                     weakMagnitude: 0.8,
                     strongMagnitude: 0.8
                 });
@@ -315,16 +415,46 @@
                 });
             };
         }
+
+        /**
+         * FIX 2: Corrected startUpdateLoop function.
+         * * This version tracks the specific gamepad by its 'index' property,
+         * rather than just grabbing gamepads[0] on every frame.
+         * It also properly handles the case where the gamepad state becomes null.
+         */
         function startUpdateLoop() {
+            // 1. Check if we have a gamepad to track. If not, stop.
+            if (!connectedGamepad) {
+                stopUpdateLoop(); // Ensure loop is stopped
+                return;
+            }
+
+            // 2. Get all current gamepad states
             const gamepads = navigator.getGamepads();
-            connectedGamepad = gamepads[0]; 
             
-            if (connectedGamepad) {
+            // 3. Get the fresh state of *our* specific gamepad using its stored index
+            const freshGamepadState = gamepads[connectedGamepad.index];
+
+            // 4. Check if that gamepad is still connected and update
+            if (freshGamepadState) {
+                // Re-assign connectedGamepad to the fresh state
+                connectedGamepad = freshGamepadState; 
+
+                // Update UI
                 updateButtons(connectedGamepad.buttons);
                 updateAxes(connectedGamepad.axes);
+
+                // Continue the loop
                 animationFrameId = requestAnimationFrame(startUpdateLoop);
+            } else {
+                // The gamepad we were tracking is no longer in the array.
+                // Treat it as a disconnect.
+                resetTesterUI();
+                stopUpdateLoop(); 
+                connectedGamepad = null; 
             }
         }
+
         function stopUpdateLoop() {
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
@@ -362,7 +492,7 @@
             const height = ctx.canvas.height;
             const midX = width / 2;
             const midY = height / 2;
-            const radius = width / 2 - 20; 
+            const radius = width / 2 - 20;    
             const deadzone = 0.08;
             if (Math.abs(x) < deadzone) x = 0;
             if (Math.abs(y) < deadzone) y = 0;
