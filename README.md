@@ -8,7 +8,7 @@ It's an essential tool for **developers** checking browser compatibility, or **g
 
 ## 🚀 Live Demo
 
-The tester is available on https://astear17.github.io/Console_Tester or [clone it and run locally on your device](https://github.com/Astear17/Console_Tester/main/blob/README.md#how-to-clonerun-locally)
+The tester is available on https://astear17.github.io/Console_Tester or [clone it and run locally on your device](https://github.com/Astear17/Console_Tester/blob/main/README.md#how-to-clonerun-locally)
 
 ---
 
